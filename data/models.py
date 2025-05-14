@@ -37,6 +37,7 @@ class SolarSite(BaseModel):
     installation_date = peewee.CharField(null=True)
     last_reporting_time = peewee.CharField(null=True)
     updated_on = peewee.DateTimeField(null=True)
+    uploaded_on = peewee.DateTimeField(null=True) # New field
     has_csv = peewee.BooleanField(default=False)
 
     class Meta:
@@ -46,3 +47,20 @@ class SolarSite(BaseModel):
 # Ensure schema and table exist
 if not db.table_exists('solar_installations', schema='solar'):
     db.create_tables([SolarSite], safe=True)
+
+class SiteProductionData(BaseModel):
+    site = peewee.ForeignKeyField(SolarSite, backref='production_data', field=SolarSite.site_id)
+    timestamp = peewee.DateTimeField()
+    production = peewee.IntegerField()
+
+    class Meta:
+        table_name = 'site_production_data'
+        schema = 'solar'
+        # Add a composite unique constraint to prevent duplicate entries for the same site and timestamp
+        indexes = (
+            (('site', 'timestamp'), True),
+        )
+
+# Ensure the new table exists
+if not db.table_exists('site_production_data', schema='solar'):
+    db.create_tables([SiteProductionData], safe=True)

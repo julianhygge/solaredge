@@ -7,7 +7,7 @@ import re
 from data.models import SolarSite, db
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(levelname)s - %(message)s')
 
 BASE_DOWNLOAD_URL = "https://monitoringpublic.solaredge.com/solaredge-web/p/charts/{site_id}/chartExport"
 CSV_BASE_DIR = "csv_data"
@@ -73,7 +73,7 @@ def download_csvs_for_sites():
         countries_to_filter = ['India']
         sites = SolarSite.select().where(
             (SolarSite.country.in_(countries_to_filter)) &
-            (SolarSite.has_csv == False)
+            (SolarSite.has_csv == False) 
         )
         logging.info(f"Querying sites for countries: {countries_to_filter} where has_csv is False.")
 
@@ -103,8 +103,8 @@ def download_csvs_for_sites():
             # 2. Determine end_time (et)
             end_date_dt = parse_date_string(site.last_reporting_time)
             if not end_date_dt:
-                logging.warning(f"Site ID {site.site_id}: Skipping. Cannot parse last_reporting_time: {site.last_reporting_time}")
-                continue
+                logging.info(f"Site ID {site.site_id}: last_reporting_time is '{site.last_reporting_time}'. Using current date as end_date.")
+                end_date_dt = datetime.now(timezone.utc)
             
             logging.info(f"Determined start_date_dt: {start_date_dt}, end_date_dt: {end_date_dt}")
 
@@ -152,7 +152,7 @@ def download_csvs_for_sites():
 
             # 7. Download CSV
             try:
-                response = requests.get(download_url, params=params, timeout=300) # Increased to 300 seconds (5 minutes)
+                response = requests.get(download_url, params=params, timeout=3000) # Increased to 300 seconds (5 minutes)
                 response.raise_for_status()  # Raises an HTTPError for bad responses (4XX or 5XX)
                 
                 with open(filepath, 'wb') as f: # write in binary mode
