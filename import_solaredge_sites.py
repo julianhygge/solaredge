@@ -1,5 +1,5 @@
 
-from domain.logic import import_solar_data
+from domain.sites_importer_service import import_solar_data
 
 if __name__ == "__main__":
     # You can set a limit for testing, or None to fetch all

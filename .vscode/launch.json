@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: main.py",
-            "type": "python",
+            "name": "Import solaredge sites",
+            "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/main.py",
+            "program": "${workspaceFolder}/import_solaredge_sites.py",
             "console": "integratedTerminal",
             "justMyCode": false
         }

@@ -36,6 +36,8 @@ class SolarSite(BaseModel):
     secondary_address = peewee.CharField(null=True)
     installation_date = peewee.CharField(null=True)
     last_reporting_time = peewee.CharField(null=True)
+    updated_on = peewee.DateTimeField(null=True)
+    has_csv = peewee.BooleanField(default=False)
 
     class Meta:
         table_name = 'solar_installations'
