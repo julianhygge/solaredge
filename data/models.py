@@ -39,6 +39,7 @@ class SolarSite(BaseModel):
     updated_on = peewee.DateTimeField(null=True)
     uploaded_on = peewee.DateTimeField(null=True) # New field
     has_csv = peewee.BooleanField(default=False)
+    profile_updated_on = peewee.DateTimeField(null=True) # New field for yearly profile calculation
 
     class Meta:
         table_name = 'solar_installations'
@@ -64,3 +65,22 @@ class SiteProductionData(BaseModel):
 # Ensure the new table exists
 if not db.table_exists('site_production_data', schema='solar'):
     db.create_tables([SiteProductionData], safe=True)
+
+class SiteReferenceYearProduction(BaseModel):
+    site = peewee.ForeignKeyField(SolarSite, backref='reference_production', field=SolarSite.site_id)
+    # Stores a timestamp normalized to a generic year (e.g., all timestamps will have year 2000)
+    # This represents a specific 15-minute interval within a year (e.g., Jan 1st, 00:00, Jan 1st, 00:15)
+    reference_timestamp = peewee.DateTimeField()
+    per_kw_generation = peewee.FloatField() # Stores the calculated average generation per kW for this interval
+
+    class Meta:
+        table_name = 'site_reference_year_production'
+        schema = 'solar'
+        indexes = (
+            # Unique constraint for site and normalized timestamp
+            (('site', 'reference_timestamp'), True),
+        )
+
+# Ensure the new table for reference year production exists
+if not db.table_exists('site_reference_year_production', schema='solar'):
+    db.create_tables([SiteReferenceYearProduction], safe=True)

@@ -2,3 +2,4 @@ requests
 peewee
 dynaconf
 psycopg2-binary
+pandas
