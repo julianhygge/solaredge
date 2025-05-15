@@ -70,7 +70,7 @@ def download_csvs_for_sites():
     """
     try:
         db.connect(reuse_if_open=True)
-        countries_to_filter = ['India']
+        countries_to_filter = ['Canada']
         sites = SolarSite.select().where(
             (SolarSite.country.in_(countries_to_filter)) &
             (SolarSite.has_csv == False) 
@@ -99,6 +99,13 @@ def download_csvs_for_sites():
             if not start_date_dt:
                 logging.warning(f"Site ID {site.site_id}: Skipping. Cannot determine start date (updated_on and installation_date are missing or invalid).")
                 continue
+
+            # --- Apply minimum start date constraint ---
+            min_start_date_allowed = datetime(2020, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+            if start_date_dt < min_start_date_allowed:
+                logging.info(f"Site ID {site.site_id}: Original start_date {start_date_dt} is before {min_start_date_allowed}. Adjusting to {min_start_date_allowed}.")
+                start_date_dt = min_start_date_allowed
+            # --- End minimum start date constraint ---
 
             # 2. Determine end_time (et)
             end_date_dt = parse_date_string(site.last_reporting_time)
