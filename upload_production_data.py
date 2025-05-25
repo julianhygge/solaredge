@@ -11,18 +11,18 @@ CSV_DIRECTORY = 'csv_data'
 
 def parse_production_value(value_str):
     """
-    Parses the production value string, removing quotes and converting to int.
+    Parses the production value string, removing quotes and converting to float.
     Handles cases where value might be missing or not a valid number.
     """
     try:
         # Remove common quote characters and whitespace
         cleaned_value = value_str.replace('"', '').strip()
         if not cleaned_value: # Handle empty strings after cleaning
-            return 0
-        return int(float(cleaned_value)) # float first to handle "0.0" then int
+            return 0.0 # Return float 0.0
+        return float(cleaned_value)
     except ValueError:
-        logger.warning(f"Could not parse production value: '{value_str}'. Defaulting to 0.")
-        return 0
+        logger.warning(f"Could not parse production value: '{value_str}'. Defaulting to 0.0.")
+        return 0.0 # Return float 0.0
 
 def upload_csv_data():
     """
@@ -42,7 +42,7 @@ def upload_csv_data():
         db.connect(reuse_if_open=True)
         logger.info("Database connection established.")
         
-        # Query sites from DB that have CSVs and have an existing uploaded_on date (uploaded_on IS NOT NULL)
+        # Query sites from DB that have CSVs and have an existing uploaded_on date (uploaded_on IS NULL)
         sites_to_process = SolarSite.select().where(
             SolarSite.has_csv == True,
             SolarSite.uploaded_on.is_null(True) # Ensure uploaded_on is NULL

@@ -45,14 +45,23 @@ class SolarSite(BaseModel):
         table_name = 'solar_installations'
         schema = 'solar'
 
-# Ensure schema and table exist
+# Ensure schema exists and create if not
+try:
+    with db.atomic():
+        db.execute_sql('CREATE SCHEMA IF NOT EXISTS solar')
+    print("Schema 'solar' verified/created successfully")
+except Exception as e:
+    print(f"Error creating schema: {e}")
+    raise
+
+# Ensure table exists
 if not db.table_exists('solar_installations', schema='solar'):
     db.create_tables([SolarSite], safe=True)
 
 class SiteProductionData(BaseModel):
     site = peewee.ForeignKeyField(SolarSite, backref='production_data', field=SolarSite.site_id)
     timestamp = peewee.DateTimeField()
-    production = peewee.IntegerField()
+    production = peewee.FloatField()
 
     class Meta:
         table_name = 'site_production_data'

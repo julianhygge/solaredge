@@ -4,9 +4,9 @@ name = "solaredge_data.db"
 
 [postgres]
 host = "localhost"
-port = 9814
+port = 9817
 user = "postgres"
-password = "Hygge4EV"
+password = "mishka1%"
 database = "p2p-simulator-int"
 schema = "solar"
 table = "solar_installations"

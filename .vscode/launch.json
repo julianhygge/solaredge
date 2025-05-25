@@ -8,6 +8,15 @@
             "program": "${workspaceFolder}/import_solaredge_sites.py",
             "console": "integratedTerminal",
             "justMyCode": false
+        },
+        {
+            "name": "Download site CSVs",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/download_site_csvs.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": []
         }
     ]
 }

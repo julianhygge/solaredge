@@ -70,11 +70,15 @@ def download_csvs_for_sites():
     """
     try:
         db.connect(reuse_if_open=True)
-        countries_to_filter = ['Canada']
+        countries_to_filter = ['Canada', 'India']
+        # sites = SolarSite.select().where(
+        #     (SolarSite.country.in_(countries_to_filter)) &
+        #     (SolarSite.has_csv == False) 
+        # )
         sites = SolarSite.select().where(
-            (SolarSite.country.in_(countries_to_filter)) &
-            (SolarSite.has_csv == False) 
+            SolarSite.site_id == '1627298'
         )
+        1627298
         logging.info(f"Querying sites for countries: {countries_to_filter} where has_csv is False.")
 
         if not sites:
@@ -101,7 +105,7 @@ def download_csvs_for_sites():
                 continue
 
             # --- Apply minimum start date constraint ---
-            min_start_date_allowed = datetime(2020, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+            min_start_date_allowed = datetime(2022, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
             if start_date_dt < min_start_date_allowed:
                 logging.info(f"Site ID {site.site_id}: Original start_date {start_date_dt} is before {min_start_date_allowed}. Adjusting to {min_start_date_allowed}.")
                 start_date_dt = min_start_date_allowed
@@ -159,7 +163,7 @@ def download_csvs_for_sites():
 
             # 7. Download CSV
             try:
-                response = requests.get(download_url, params=params, timeout=3000) # Increased to 300 seconds (5 minutes)
+                response = requests.get(download_url, params=params, timeout=600) # Increased to 300 seconds (5 minutes)
                 response.raise_for_status()  # Raises an HTTPError for bad responses (4XX or 5XX)
                 
                 with open(filepath, 'wb') as f: # write in binary mode
